@@ -16,16 +16,19 @@ pygame.display.set_caption('Graficos en OpenGL')
 def inicializar_Ortografica():
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    gluOrtho2D(0, 5, -1, 1)
+    gluOrtho2D(0, 5, -1, 1) # el vector de la cámara
 
 def plotearGrafico():
-    glBegin(GL_POINTS)
-    px: GL_DOUBLE
-    py: GL_DOUBLE
-    for px in np.arange(0, 5, 0.00005):
+    glBegin(GL_POINTS) # graficar un punto
+    px: GL_DOUBLE # coordenada X de DOUBLE en OpenGL
+    py: GL_DOUBLE # coordenada Y en DOUBLE en OpenGL
+    for px in np.arange(0, 5, 0.0005):
         py = math.exp(-px) * math.cos(2*math.pi * px)
+        # py = math.exp(-px)
+        # e**(-x) * (cos(2*pi*x))
         glVertex2f(px, py)
-    glEnd()
+        # graficar el vértice x, y
+    glEnd() # termine de graficarlo en pantalla
 
 def DibujarEstrella(x, y, tamanio):
     glPointSize(tamanio)
@@ -41,12 +44,12 @@ while not Fin:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             Fin = True
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glMatrixMode(GL_MODELVIEW)
-    glLoadIdentity()
-    plotearGrafico()
-    pygame.display.flip()
-    pygame.time.wait(100)
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) # borrar pantalla
+    glMatrixMode(GL_MODELVIEW) # normalizar entre [-1, 1]
+    glLoadIdentity() # borrar contenido de pantalla
+    plotearGrafico() # dibujar la función
+    pygame.display.flip() # actualizar pantalla
+    pygame.time.wait(100) # esperar 100ms.
 
 pygame.quit()
 
