@@ -1,16 +1,16 @@
-import pygame
-from pygame.locals import *
-from OpenGL.GL import *
+import pygame                 # <--- interacción, creación de la pantalla
+from pygame.locals import *   # <--- botones ESC, ESPACIO, etc
+from OpenGL.GL import *       # <--- GPU
 from OpenGL.GLU import *
 from Cube import wireCube
 
 pygame.init()
 
 # project settings
-screen_width = 1000
-screen_height = 800
+screen_width = 1000 # normalizar [-1, 1]
+screen_height = 800 # normalizar [-1, 1]
 background_color = (0, 0, 0, 1)
-drawing_color = (1, 1, 1, 1)
+drawing_color = (0.5, 1, 1, 1)
 
 screen = pygame.display.set_mode((screen_width, screen_height), DOUBLEBUF | OPENGL)
 pygame.display.set_caption('OpenGL in Python')
@@ -35,10 +35,15 @@ def initialise():
 
 
 def display():
+    # borrar la pantalla
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glRotatef(1, 5, 0, 1)
+    # establecer un giro de pantalla
+    glRotatef(1, 1, 1, 1)
+    # de manera matricial (0,0) y los bordes -1 y 1
     glPushMatrix()
+    # dibujar el cubo
     wireCube()
+    # envía este cubo a la pantalla
     glPopMatrix()
 
 
@@ -48,7 +53,7 @@ while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
-    display()
-    pygame.display.flip()
-    pygame.time.wait(5);
+    display() # ejecutar la función display
+    pygame.display.flip() # actualizar la pantalla
+    pygame.time.wait(5) # esperar 5 ms.
 pygame.quit()
