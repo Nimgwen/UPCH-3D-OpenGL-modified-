@@ -20,6 +20,7 @@ def inicializar_Ortografica():
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
     gluOrtho2D(0, ort_ancho, 0, ort_alto)
+    glColor((0.5, 1, 1, 1))
 
 def plotearGrafico():
     glBegin(GL_POINTS)
@@ -45,6 +46,15 @@ def plot_linea():
         glEnd()
 
 def map_value(current_min, current_max, new_min, new_max, value):
+    '''
+    Ajustar la posición del mouse respecto a la pantalla
+    :param current_min:
+    :param current_max:
+    :param new_min:
+    :param new_max:
+    :param value:
+    :return:
+    '''
     current_range = current_max - current_min
     new_range = new_max - new_min
     return new_min + new_range * ((value - current_min)/current_range)
@@ -55,7 +65,7 @@ mouse_down = False
 
 Fin = False
 inicializar_Ortografica()
-glPointSize(10)
+glPointSize(5)
 while not Fin:
     pos = None
     for event in pygame.event.get():
