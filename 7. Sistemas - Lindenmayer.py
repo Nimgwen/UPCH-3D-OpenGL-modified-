@@ -29,16 +29,21 @@ def z_rotation(vector, theta):
 posicion_actual = (0,0)
 direccion = np.array([0,1,0])
 
-axioma = 'X'
+'''axioma = 'X'
 Reglas = {
     "F": "FF",
     "X": "F+[-F-XF-X][+FF][--XF[+X]][++F-X]"
+}'''
+
+axioma = 'F'
+Reglas = {
+    "F": "F+F−F−F+F"
 }
 
-longitud_grafica = 5
-angulo = 25
+longitud_grafica = 10
+angulo = 90
 stack = []
-veces_ejecucion_regla = 5
+veces_ejecucion_regla = 7
 instrucciones = ""
 
 def ejecutar_regla(num_veces):
