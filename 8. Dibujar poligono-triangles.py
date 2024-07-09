@@ -1,5 +1,3 @@
-import math
-import numpy as np
 import pygame
 from pygame.locals import *
 from OpenGL.GL import *
@@ -7,87 +5,94 @@ from OpenGL.GLU import *
 
 pygame.init()
 
-ancho = 1000
-alto = 800
-ort_ancho = 640
-ort_alto = 800
+ancho = 800
+alto = 600
 
 pantalla = pygame.display.set_mode((ancho, alto), DOUBLEBUF | OPENGL)
-#colocar titulo:
-pygame.display.set_caption('Graficos en OpenGL')
+pygame.display.set_caption('Modos de renderizado OpenGL')
 
 def inicializar_Ortografica():
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    gluOrtho2D(0, ort_ancho, 0, ort_alto)
+    gluOrtho2D(0, ancho, 0, alto)
 
-def plotearGrafico():
+def dibujar_punto(x, y):
+    glPointSize(5)
     glBegin(GL_POINTS)
-    px: GL_DOUBLE
-    py: GL_DOUBLE
-    for px in np.arange(0, 5, 0.00005):
-        py = math.exp(-px) * math.cos(2*math.pi * px)
-        glVertex2f(px, py)
+    glVertex2f(x, y)
     glEnd()
 
-def DibujarEstrella(x, y, tamanio):
-    glPointSize(tamanio)
-    glBegin(GL_POINTS)
-    glVertex2i(x, y)
+def plot_GL_TRIANGLES(puntos):
+    glColor3f(1, 0, 0)  # Rojo
+    glBegin(GL_TRIANGLES)
+    for i in range(0, len(puntos), 3):
+        for j in range(3):
+            if i+j < len(puntos):
+                glVertex2f(puntos[i+j][0], puntos[i+j][1])
     glEnd()
+    
+    # Dibujar puntos
+    glColor3f(1, 1, 1)  # Blanco
+    for p in puntos:
+        dibujar_punto(p[0], p[1])
 
-def plot_linea():
-    for l in puntos:
-        glBegin(GL_LINE_STRIP)
-        for coords in l:
-            glVertex2f(coords[0], coords[1])
-        glEnd()
+def plot_GL_QUADS(puntos):
+    glColor3f(0, 1, 0)  # Verde
+    glBegin(GL_QUADS)
+    for i in range(0, len(puntos), 4):
+        for j in range(4):
+            if i+j < len(puntos):
+                glVertex2f(puntos[i+j][0], puntos[i+j][1])
+    glEnd()
+    
+    # Dibujar puntos
+    glColor3f(1, 1, 1)  # Blanco
+    for p in puntos:
+        dibujar_punto(p[0], p[1])
 
-
-def map_value(current_min, current_max, new_min, new_max, value):
-    current_range = current_max - current_min
-    new_range = new_max - new_min
-    return new_min + new_range * ((value - current_min)/current_range)
-
-
-def plot_poligono():
-    glColor(0.2,0.2,0.2,1)
-    glBegin(GL_POLYGON) #GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_QUADS, GL_QUAD_STRIP
+def plot_GL_QUAD_STRIP(puntos):
+    glColor3f(0, 0, 1)  # Azul
+    glBegin(GL_QUAD_STRIP)
     for p in puntos:
         glVertex2f(p[0], p[1])
     glEnd()
-    glColor(0.5,0.5,0.5,1)
-    glLineWidth(5)
-    glBegin(GL_LINE_LOOP)
+    
+    # Dibujar puntos
+    glColor3f(1, 1, 1)  # Blanco
     for p in puntos:
-        glVertex2f(p[0], p[1])
-    glEnd()
-
+        dibujar_punto(p[0], p[1])
 
 puntos = []
-mouse_down = False
-Fin = False
+modo_actual = 0
+modos = [plot_GL_TRIANGLES, plot_GL_QUADS, plot_GL_QUAD_STRIP]
+nombres_modos = ["GL_TRIANGLES", "GL_QUADS", "GL_QUAD_STRIP"]
+
 inicializar_Ortografica()
 
-while not Fin:
-    pos = None
+while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            Fin = True
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_b:
-                puntos = []
+            pygame.quit()
+            quit()
         elif event.type == MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
-            puntos.append((map_value(0, ancho, 0, ort_ancho, pos[0]),
-                        map_value(0, alto, ort_alto, 0, pos[1])))
+            puntos.append((pos[0], alto - pos[1]))
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                modo_actual = (modo_actual + 1) % len(modos)
+            elif event.key == pygame.K_c:
+                puntos = []
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
-    #plot_linea()
-    plot_poligono()
+
+    modos[modo_actual](puntos)
+
+    # Mostrar el modo actual
+    font = pygame.font.Font(None, 36)
+    text = font.render(nombres_modos[modo_actual], True, (255, 255, 255))
+    pantalla.blit(text, (10, 10))
+
     pygame.display.flip()
-    pygame.time.wait(1)
-
-pygame.quit()
-
+    pygame.time.wait(10)
